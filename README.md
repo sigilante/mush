@@ -18,17 +18,43 @@ client sessions at a given time.  By redirecting a request for a particular
 service made to a central endpoint according to some algorithm (round-robin, for
 instance), the service can be made robust and scalable.
 
+For instance, imagine a popular Urbit-hosted resource such as an image server.
+The image resource requested at a particular endpoint on the ship should be
+returned as a noun over Ames to the caller.  However, perhaps the ship is only
+intermittently available, or is so burdened by requests that a new marginal
+request degrades performance.  It would be preferable for the endpoint to be
+able to serve the resource efficiently by cycling or load-balancing a set of
+support ships.
+
 In the current scenario, we would like a request made for a resource to an Urbit
 ship to be handled by one of a collection of moons.  Since Urbit validates ships
 by `@p` or network address, this requires us to think carefully about how we are
-delegating and exposing resources.
+delegating and exposing resources.  Ames won't be fooled the same way one can
+set up a reverse proxy by hiding the origin server, leaving us essentially two
+choices:
 
-We essentially have two choices, given the structure of Ames:
+1.  **Delegation**.  Delegate intensive calculation to a subsidiary ship and
+    then serve the result through the original callee.  This is structurally
+    simple but may not solve the root issue of scalability for many scenarios.
+    This is similar to a classic CDN in that it maintains a single URI for
+    access.
+2.  **Redirection**.  Redirect single service calls explicitly to the
+    delegated support moon, which then treats directly as the service provider.
+    This should require the caller to always go back to the main switch for each
+    call in order to preserve load balancing.
 
-1. Delegate intensive calculation to a subsidiary
+`%mush` will employ a [sled dog
+metaphor](https://www.neewadogs.com/blogs/blog/sled-dog-commands).  The entry
+point dispatcher is `%mush`, which will hand off `$run`s to the `%dog`s on the
+`%harness`.
 
+We will call a collection of support moons a `%harness` consisting of `%dog`s,
+and we will assign tasks to them based on a round-robin algorithm.  `%mush`
+will support both delegation (`%gee`) and redirection (`%haw`).  There is a
+master list of `%dog`s called a `%lineup` from which the `%harness` of actually
+running `%dog`s is drawn.
 
-We will call a collection of support moons a `%team` consisting of `%dog`s.
+Ideally, `%mush` will be able to work like `%dbug` as an agent wrapper.
 
 This userspace proof-of-concept will allow us to request a dynamic resource from
 an Urbit ship's endpoint.  The actual calculation of the dynamic resource will

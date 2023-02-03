@@ -1,10 +1,22 @@
+  ::  /app/mush/hoon
+::::
+::    Support reverse-proxy efforts by load-balancing to a collection of moons.
+::
+::    %mush is the dispatcher to the %dogs.
+::
+/-  mush
 /+  verb, dbug, default-agent
 ::
 |%
 ::
 +$  versioned-state  $%(state-0)
 ::
-+$  state-0  [%0 ~]
++$  state-zero
+  $:  %zero
+      =harness:mush
+      =lineup:mush
+      =sled:mush
+  ==
 ::
 ::
 ::  boilerplate
