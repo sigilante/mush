@@ -54,7 +54,23 @@ will support both delegation (`%gee`) and redirection (`%haw`).  There is a
 master list of `%dog`s called a `%lineup` from which the `%harness` of actually
 running `%dog`s is drawn.
 
-Ideally, `%mush` will be able to work like `%dbug` as an agent wrapper.
+The pokes include:
+
+- `%muster` to load the candidate `$dog`s from `%settings-store`, key
+   `%mush %lineup` (with validation).
+- `%hitch` loads all valid `$dog`s from the `$lineup` into the `$harness`.  A
+    valid `$dog` is a running moon of the current ship.
+- `%ready` adds a `$dog` to the `$lineup` (with validation).
+- `%retire` removes a `$dog` from the `$lineup`.
+- `%hike` adds a `$dog` to the `$harness` (with verification).
+- `%whoa` retires a `$dog` from the `$harness`.
+- `%gee` delegates a `$run`, or endpoint task, to the given `$dog`.  The mode
+    is set from `%settings-store`, key `%mush %mode`.
+- `%haw` redirects a `$run`, or endpoint task, to the given `$dog`.
+
+Ideally, `%mush` compatibility will be able to work like `%dbug` as an agent
+wrapper.  A complying agent will be able to automatically handle `%mush` CDN
+behavior by including a single line such as `%-  agent:mush`.
 
 This userspace proof-of-concept will allow us to request a dynamic resource from
 an Urbit ship's endpoint.  The actual calculation of the dynamic resource will

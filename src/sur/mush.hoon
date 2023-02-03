@@ -15,15 +15,21 @@
 +$  lineup    (set dog)
 ::  $sled: tracker for tasks delegated to moons
 +$  sled      (map run dog)
+::  $mode: how the task delegation should be handled
++$  mode  ?(%delegation %redirection)
 ::  $run: an endpoint for the support $dog to handle
 +$  run       path
 ::  $action: the basic events for the %mush app logic
 +$  action
-  $%  :: %train ensures that a possible $dog is in fact a moon of the team
+  $%  :: %muster loads a collection of moons, including validation
+      [%muster lineup]
+      :: %train ensures that a possible $dog is in fact a moon of the team
       [%train =dog]
-      :: %ready adds a $dog to the $line
+      :: %muster loads a collection of moons, including validation
+      [%hitch lineup]
+      :: %ready adds a $dog to the $lineup
       [%ready =dog]
-      :: %retire removes a $dog from the $harness
+      :: %retire removes a $dog from the $lineup
       [%retire =dog]
       :: %hike adds a $dog to the $harness
       [%hike =dog]
