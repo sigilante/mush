@@ -80,11 +80,13 @@
       ::  Supply a candidate $dog to $lineup and  %settings-store.  The
       ::  actual current $harness is set by a subscription to
       ::  %settings-store, so we have a local practical source and a
-      ::  remote canonical source.
+      ::  remote canonical source.  HOWEVER the local state is set when the
+      ::  subscribe %fact comes back as a $gift, not here.
       =/  pup=dog  +.axn
       =/  rol=(set dog)  (~(put in lineup) pup)
-      =/  evt=event:settings  [%put-bucket %mush %lineup (pile:eng rol)]
-      :_  this(lineup rol)
+      =/  evt=event:settings
+          [%put-entry %mush %lineup `@tas`(desig +.axn) `val:settings`[%s '']]
+      :_  this
       :~  [%pass / %agent [our.bol %settings-store] %poke %settings-event !>(evt)]
       ==
       ::
@@ -102,8 +104,8 @@
       =/  evt=event:settings  [%del-bucket %mush %lineup]
       =/  mod=event:settings  [%del-bucket %mush %mode]
       :_  this
-      :~  [%pass / %agent [our.bol %settings-store] %poke %settings-event !>(evt)]
-          [%pass / %agent [our.bol %settings-store] %poke %settings-event !>(mod)]
+      :~  [%pass /lineup %agent [our.bol %settings-store] %poke %settings-event !>(evt)]
+          [%pass /mode %agent [our.bol %settings-store] %poke %settings-event !>(mod)]
       ==
       ::
         %muster
@@ -167,11 +169,31 @@
       [%lineup ~]
     ?+    -.sig  (on-agent:def wir sig)
         %fact
+      ?+    p.cage.sig  (on-agent:def wir sig)
+          %mush-action
+        =/  axn  !<(action q.cage.sig)
+        ~&  >  axn
         `this
-    ==
+        ::
+        ::  Handle incoming changes from %settings-store
+        ::
+          %settings-event
+        =/  evt  !<(event:settings q.cage.sig)
+        ~&  >>  -.evt
+        ~&  >>>  +:evt
+        ?+    -.evt  (on-agent:def wir sig)
+            %put-entry
+          `this(lineup (~(put in lineup) (resig key.evt)))
+            %del-entry
+          `this(lineup (~(del in lineup) (resig key.evt)))
+            %del-bucket  ::TODO doesn't work yet
+          `this(lineup *^lineup)
+        ==  :: settings-event
+      ==  :: mark
+    ==  :: wire type
       [%mode ~]
   `this
-  ==
+  ==  :: wire
   :: subscription to %settings-store for dog lineup etc., auto-retirement
 ::
 ++  on-arvo
