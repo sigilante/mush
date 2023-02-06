@@ -45,14 +45,14 @@ choices:
 
 `%mush` will employ a [sled dog
 metaphor](https://www.neewadogs.com/blogs/blog/sled-dog-commands).  The entry
-point dispatcher is `%mush`, which will hand off `$run`s to the `%dog`s on the
-`%harness`.
+point dispatcher is `%mush`, which will hand off `$run`s to the `$dog`s on the
+`$harness`.
 
-We will call a collection of support moons a `%harness` consisting of `%dog`s,
+We will call a collection of support moons a `$harness` consisting of `$dog`s,
 and we will assign tasks to them based on a round-robin algorithm.  `%mush`
 will support both delegation (`%gee`) and redirection (`%haw`).  There is a
-master list of `%dog`s called a `%lineup` from which the `%harness` of actually
-running `%dog`s is drawn.
+master list of `$dog`s called a `$lineup` from which the `$harness` of actually
+running `$dog`s is drawn.
 
 The pokes include:
 
