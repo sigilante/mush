@@ -4,7 +4,7 @@
 ::
 ::    %mush is the dispatcher to the %dogs.
 ::
-/-  mush
+/-  *mush, settings
 /+  verb, dbug, default-agent
 ::
 |%
@@ -13,9 +13,10 @@
 ::
 +$  state-zero
   $:  %zero
-      =harness:mush
-      =lineup:mush
-      =sled:mush
+      =lineup
+      =mode
+      =harness
+      =sled
   ==
 ::
 ::
@@ -32,16 +33,24 @@
 ^-  agent:gall
 ::
 =<
-|_  =bowl:gall
+|_  bol=bowl:gall
 +*  this  .
-    def   ~(. (default-agent this %|) bowl)
-    eng   ~(. +> [bowl ~])
+    def   ~(. (default-agent this %|) bol)
+    eng   ~(. +> [bol ~])
+::
 ++  on-init
   ^-  (quip card _this)
-  ~>  %bout.[0 '%mush +on-init']
-  =^  cards  state
-    abet:init:eng
-  [cards this]
+  ::  ++on-init will set default keys in %settings-store.  It's gross to use
+  ::  single-key maps like this but %settings-store doesn't currently support
+  ::  sets so we'll roll with it.
+  =/  evt=event:settings  [%put-bucket %mush %lineup *(map dog _~)]
+  =/  mod=event:settings  [%put-bucket %mush %mode *(map %mode *mode)]
+  :_  this
+  :~  [%pass / %agent [our.bol %settings-store] %poke !>(evt)]
+      [%pass / %agent [our.bol %settings-store] %poke !>(mod)]
+      [%pass /lineup %agent [our.bol %settings-store] %watch /bucket/mush/lineup]
+      [%pass /mode %agent [our.bol %settings-store] %watch /bucket/mush/mode]
+  ==
 ::
 ++  on-save
   ^-  vase
@@ -58,9 +67,85 @@
 ::
 ++  on-poke
   |=  [mar=mark vaz=vase]
-  ~>  %bout.[0 '%mush +on-poke']
   ^-  (quip card _this)
-  `this
+  ?>  =(our src):bol
+  ?+    mar  (on-poke:def mar vaz)
+      %noun
+    (on-poke:def mar vaz)
+      %mush-action
+    =+  !<(axn=action vaz)
+    ?-    -.axn
+        %pedigree
+      ::  Supply a candidate $dog to %settings-store.  The actual current
+      ::  $harness is set by a subscription to %settings-store, so we have
+      ::  a local practical source and a remote canonical source.
+      =/  =dog  +.axn
+      =/  rol=(set dogs)  (silt ~(tap by harness))
+      =/  rol=(set dogs)  (~(put in rol) dog)
+      =/  evt=event:settings  [%put-bucket %mush %lineup (pile:eng rol)]
+      :_  this
+      :~  [%pass / %agent [our.bol %settings-store] %poke !>(evt)]
+      ==
+      ::
+        %charter
+      ::  Set the mode in %settings-store.
+      =/  mod=mode  +.axn
+      =/  evt=event:settings  [%put-bucket %mush %mode (malt ~[[%mode mod]])]
+      :_  this
+      :~  [%pass / %agent [our.bol %settings-store] %poke !>(evt)]
+      ==
+      ::
+        %bankrupt
+      ::  Remove all info from %settings-store.
+      =/  evt=event:settings  [%del-bucket %mush %lineup]
+      =/  mod=event:settings  [%del-bucket %mush %mode]
+      :_  this
+      :~  [%pass / %agent [our.bol %settings-store] %poke !>(evt)]
+          [%pass / %agent [our.bol %settings-store] %poke !>(mod)]
+      ==      
+      ::
+        %muster
+      ::  Load the candidate $dogs into the $lineup.
+      `this
+      ::
+        %hitch
+      ::  Load all valid $dogs from the $lineup into the $harness.
+      ::  A valid dog must be a running moon of the current ship.
+      `this
+      ::
+        %ready
+      ::  Add a single $dog to the $lineup.
+      `this
+      ::
+        %retire
+      ::  Remove a $dog from the $lineup.
+      `this
+      ::
+        %hike
+      ::  Add a $dog to the $harness.
+      `this
+      ::
+        %whoa
+      ::  Remove a $dog from the $harness.
+      `this
+      ::
+        %voyage
+      ::  Register a $run.
+      `this
+      ::
+        %cancel
+      ::  Unregister a $run.
+      `this
+      ::
+        %gee
+      ::  Delegate a $run.
+      `this
+      ::
+        %haw
+      ::  Redirect a $run.
+      `this
+    ==
+  ==
 ::
 ++  on-peek
   |=  =path
@@ -73,6 +158,7 @@
   ~>  %bout.[0 '%mush +on-agent']
   ^-  (quip card _this)
   `this
+  :: subscription to %settings-store for dog lineup etc., auto-retirement
 ::
 ++  on-arvo
   |=  [wir=wire sig=sign-arvo]
@@ -94,7 +180,7 @@
   ~>  %bout.[0 '%mush +on-leave']
   on-leave:def
 --
-|_  [bol=bowl:gall dek=(list card)]
+|_  [bol=bol:gall dek=(list card)]
 +*  dat  .
 ++  emit  |=(=card dat(dek [card dek]))
 ++  emil  |=(lac=(list card) dat(dek (welp lac dek)))
@@ -111,4 +197,23 @@
   ^+  dat
   ?>  ?=([%0 *] q.vaz)
   dat(state !<(state-0 vaz))
+::  Load candidate $dogs from %settings-store.
+::
+++  muster
+  |=  vaz=vase
+  ^+  dat
+  ?>  ?=([%0 *] q.vaz)
+  dat(state !<(state-0 vaz))
+::  Unroll a set of values into keys for a map of nulls.
+::
+++  pile
+  |=  dogs=(set dog)
+  ^-  (map dog _~)
+  =/  pups  ~(tap in dogs)
+  =/  len   (lent pups)
+  =/  idx   0
+  =|  pyl=(map dog _~)
+  |-
+  ?:  =(idx len)  pyl
+  $(pyl (~(put by pyl) (snag idx pups)), idx +(idx))
 --

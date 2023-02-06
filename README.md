@@ -56,6 +56,11 @@ running `%dog`s is drawn.
 
 The pokes include:
 
+- `%pedigree` to add a candidate `$dog` to `%settings-store`.  (Ultimately
+    we'll want this from a file.)
+- `%charter` to set the mode in `%settings-store`, as one of `%delegate`
+    (`%gee`) or (`%redirect`) `%haw`.
+- `%bankrupt` to remove all related data from `%settings-store`.
 - `%muster` to load the candidate `$dog`s from `%settings-store`, key
    `%mush %lineup` (with validation).
 - `%hitch` loads all valid `$dog`s from the `$lineup` into the `$harness`.  A
@@ -79,3 +84,10 @@ be delegated to a moon and then served through the parent ship.
 Altho not currently an acute problem, load balancing for ships will eventually
 need to take place for very active ships on the network (distributing popular
 software, for instance, or supporting gameplay).
+
+TODO:
+- [ ] try with `|install` triggers or `%docket` discovery stuff
+
+##  Further Reading
+
+- [`%dbug` Debugging Wrapper](https://developers.urbit.org/guides/additional/app-workbook/dbug), Urbit App Workbook
