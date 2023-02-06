@@ -167,9 +167,6 @@
       [%lineup ~]
     ?+    -.sig  (on-agent:def wir sig)
         %fact
-        ~&  >>>  cage
-        ~&  >>  wir
-        ~&  >  sig
         `this
     ==
       [%mode ~]
@@ -242,4 +239,10 @@
   |=  =@p
   ^-  @tas
   (crip +:(trip (scot %p p)))
+::  Add a leading ~ sig to a cord and return as a @p.
+::
+++  resig
+  |=  =@tas
+  ^-  @p
+  (need (slaw %p (crip `tape`(weld "~" (trip tas)))))
 --

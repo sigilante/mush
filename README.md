@@ -43,6 +43,7 @@ choices:
     This should require the caller to always go back to the main switch for each
     call in order to preserve load balancing.
 
+
 `%mush` will employ a [sled dog
 metaphor](https://www.neewadogs.com/blogs/blog/sled-dog-commands).  The entry
 point dispatcher is `%mush`, which will hand off `$run`s to the `$dog`s on the
@@ -52,7 +53,8 @@ We will call a collection of support moons a `$harness` consisting of `$dog`s,
 and we will assign tasks to them based on a round-robin algorithm.  `%mush`
 will support both delegation (`%gee`) and redirection (`%haw`).  There is a
 master list of `$dog`s called a `$lineup` from which the `$harness` of actually
-running `$dog`s is drawn.
+running `$dog`s is drawn.  Each incoming `$run` is assigned to a `$dog` by the
+specified `$mode`.
 
 The pokes include:
 
@@ -73,13 +75,32 @@ The pokes include:
     is set from `%settings-store`, key `%mush %mode`.
 - `%haw` redirects a `$run`, or endpoint task, to the given `$dog`.
 
+The major data structures in the state include:
+
+- `lineup` maintains a list of candidate moons which may be available for use
+    with this app.  The moons are initially loaded from `%settings-store`,
+    and an agent-local copy is maintained.  A subscription to `%settings-store`
+    is maintained so that regular JSON-based external interactions can alter
+    the moon list.  `lineup` is a `set` because order does not matter.
+
+- `mode` determines whether delegation or redirection is preferred.  Delegation,
+    as mentioned above, lets the client moon carry out the endpoint task, while
+    redirection actually tells the caller to instead request from the moon
+    directly at the same endpoint.
+
+- `harness` represents the list of moons which are actually available for use
+    as support clients.  This list needs to be actively maintained against the
+    known state of spawned and running moons as well as the `lineup`.  `harness`
+    is a `list` because a round-robin algorithm is used to balance the load.
+
+- `sled` tracks the `run`s assigned to `dog`s, or in other words who is
+    responsible for what in this system.  We don't maintain a separate queue of
+    calls since that's really what Urbit does for us—the advantage of an event
+    log.
+
 Ideally, `%mush` compatibility will be able to work like `%dbug` as an agent
 wrapper.  A complying agent will be able to automatically handle `%mush` CDN
 behavior by including a single line such as `%-  agent:mush`.
-
-This userspace proof-of-concept will allow us to request a dynamic resource from
-an Urbit ship's endpoint.  The actual calculation of the dynamic resource will
-be delegated to a moon and then served through the parent ship.
 
 Altho not currently an acute problem, load balancing for ships will eventually
 need to take place for very active ships on the network (distributing popular
