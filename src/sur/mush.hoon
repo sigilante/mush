@@ -31,7 +31,7 @@
       [%muster ~]
       :: %train ensures that a possible $dog is in fact a moon of the team
       [%train =dog]
-      :: %muster loads a collection of moons, including validation
+      :: %hitch loads all dogs into the harness from the lineup (kick later)
       [%hitch ~]
       :: %ready adds a $dog to the $lineup
       [%ready =dog]

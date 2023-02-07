@@ -71,6 +71,8 @@
 ++  on-poke
   |=  [mar=mark vaz=vase]
   ^-  (quip card _this)
+  ~&  >>>  mar
+  ~&  >>  vaz
   ?>  =(our src):bol
   ?+    mar  (on-poke:def mar vaz)
       %noun
@@ -111,7 +113,8 @@
       ==
       ::
         %muster
-      ::  Load the candidate $dogs into the $lineup.
+      ::  Load a collection of candidate $dogs into %settings-store which will
+      ::  trigger the $lineup via ++on-agent.
       `this
       ::
         %train
@@ -133,7 +136,18 @@
         %hitch
       ::  Load all valid $dogs from the $lineup into the $harness.
       ::  A valid dog must be a running moon of the current ship.
-      `this
+      ::  Since we don't know a priori which dogs are valid, we instead have to
+      ::  load every dog and then see if it gets kicked, so we use %train cards.
+      |^
+        ~&  ~(tap in cards)
+        :_  this(harness ~(tap in lineup))
+        ^-  (list card)  ~(tap in cards)
+      ++  cards
+        ^-  (set card)
+        %-  ~(run in lineup)
+        |=  =dog
+        [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train dog])]
+      --
       ::
         %ready
       ::  Add a single $dog to the $lineup.
@@ -178,7 +192,6 @@
 ++  on-agent
   |=  [wir=wire sig=sign:agent:gall]
   ^-  (quip card _this)
-  ~&  >  [wir sig]
   ?+    wir  (on-agent:def wir sig)
       [%lineup ~]
     ?+    -.sig  (on-agent:def wir sig)

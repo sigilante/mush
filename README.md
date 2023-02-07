@@ -121,10 +121,15 @@ TODO:
 ##  Some Useful Commands
 
 ```hoon
-:mush &mush-action [%pedigree ~mister-dister-dozzod]
-:mush &mush-action [%train ~mister-dister-dozzod]
-:mush &mush-action [%bankrupt ~]
+:mush &mush-action [%pedigree ~dister-dozzod-doznec]
+:mush &mush-action [%pedigree ~mister-dozzod-doznec]
+:mush &mush-action [%pedigree ~mistyr-dozzod-doznec]
+:mush &mush-action [%train ~dister-dozzod-doznec]
+:mush &mush-action [%train ~mister-dozzod-doznec]
+:mush &mush-action [%train ~mistyr-dozzod-doznec]
+:mush &mush-action [%hitch ~]
 
+:mush &mush-action [%bankrupt ~]
 ```
 
 Useful training moons:
@@ -132,5 +137,6 @@ Useful training moons:
 ```hoon
 ~dister-dozzod-doznec
 ~distyr-dozzod-doznec
-~disfyr-dozzod-doznec
+~mister-dozzod-doznec
+~mistyr-dozzod-doznec
 ```
