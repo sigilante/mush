@@ -65,6 +65,8 @@ The pokes include:
 - `%bankrupt` to remove all related data from `%settings-store`.
 - `%muster` to load the candidate `$dog`s from `%settings-store`, key
    `%mush %lineup` (with validation).
+-  `%train` ensures that a possible `$dog` is in fact a moon of the team (no
+    check against `lineup` is made, simply that the point is a running moon).
 - `%hitch` loads all valid `$dog`s from the `$lineup` into the `$harness`.  A
     valid `$dog` is a running moon of the current ship.
 - `%ready` adds a `$dog` to the `$lineup` (with validation).
@@ -107,8 +109,28 @@ need to take place for very active ships on the network (distributing popular
 software, for instance, or supporting gameplay).
 
 TODO:
+- [ ] deduplicate subscriptions to `%ahoy` per moon
 - [ ] try with `|install` triggers or `%docket` discovery stuff
 
 ##  Further Reading
 
 - [`%dbug` Debugging Wrapper](https://developers.urbit.org/guides/additional/app-workbook/dbug), Urbit App Workbook
+
+---
+
+##  Some Useful Commands
+
+```hoon
+:mush &mush-action [%pedigree ~mister-dister-dozzod]
+:mush &mush-action [%train ~mister-dister-dozzod]
+:mush &mush-action [%bankrupt ~]
+
+```
+
+Useful training moons:
+
+```hoon
+~dister-dozzod-doznec
+~distyr-dozzod-doznec
+~disfyr-dozzod-doznec
+```

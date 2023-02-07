@@ -4,7 +4,7 @@
 ::
 ::    %mush is the dispatcher to the %dogs.
 ::
-/-  *mush, settings
+/-  *mush, settings, ahoy
 /+  verb, dbug, default-agent
 ::
 |%
@@ -17,6 +17,7 @@
       =mode
       =harness
       =sled
+      interval=@dr
   ==
 ::
 ::
@@ -46,11 +47,12 @@
   =/  mod=event:settings  [%put-bucket %mush %mode *(map key:settings val:settings)]
   ::=/  dat  .^(data:settings %gx /=settings-store=/bucket/mush/lineup/noun)
   ::=/  mat  .^(data:settings %gx /=settings-store=/bucket/mush/mode/noun)
-  :_  this(harness *^harness, lineup *^lineup, mode *^mode, sled *^sled) ::(lineup ~(key by +.dat), mode )
+  :_  this(harness *^harness, lineup *^lineup, mode *^mode, sled *^sled, interval ~s5)
   :~  [%pass / %agent [our.bol %settings-store] %poke %settings-event !>(evt)]
       [%pass / %agent [our.bol %settings-store] %poke %settings-event !>(mod)]
       [%pass /lineup %agent [our.bol %settings-store] %watch /bucket/mush/lineup]
       [%pass /mode %agent [our.bol %settings-store] %watch /bucket/mush/mode]
+      [%pass / %agent [our.bol %ahoy] %poke %ahoy-command !>([%set-update-interval ~s5])]
   ==
 ::
 ++  on-save
@@ -60,11 +62,11 @@
 ::
 ++  on-load
   |=  ole=vase
-  ~>  %bout.[0 '%mush +on-load']
   ^-  (quip card _this)
-  =^  cards  state
-    abet:(load:eng ole)
-  [cards this]
+  =/  old  !<(versioned-state ole)
+  ?-  -.old
+    %zero  `this(state old)
+  ==
 ::
 ++  on-poke
   |=  [mar=mark vaz=vase]
@@ -114,8 +116,19 @@
       ::
         %train
       ::  Verify that a possible dog is in fact a valid moon of the team. 
-      ::  A valid dog must be a running moon of the current ship.
-      `this
+      ::  A valid dog must be a *running* moon of the current ship.
+      =/  mun=dog  +.axn
+      ::  Check for rank as moon
+      ?>  =(%earl (clan:title mun))
+      ::  Check for team membership
+      ?>  (team:title our.bol mun)
+      ::  Check that the ship is spawned
+      ?>  (gth (need .^((unit @ud) j+/(scot %p our.bol)/lyfe/(scot %da now.bol)/(scot %p mun))) 0)
+      ::  Check that the ship is running---this will require a %gift to finish
+      :_  this
+      :~  [%pass /race/(scot %p mun)/(scot %da now.bol) %agent [our.bol %ahoy] %watch /race]
+          [%pass /race %agent [our.bol %ahoy] %poke %ahoy-command !>([%add-watch mun interval])]
+      ==
       ::
         %hitch
       ::  Load all valid $dogs from the $lineup into the $harness.
@@ -165,6 +178,7 @@
 ++  on-agent
   |=  [wir=wire sig=sign:agent:gall]
   ^-  (quip card _this)
+  ~&  >  [wir sig]
   ?+    wir  (on-agent:def wir sig)
       [%lineup ~]
     ?+    -.sig  (on-agent:def wir sig)
@@ -179,20 +193,42 @@
         ::
           %settings-event
         =/  evt  !<(event:settings q.cage.sig)
-        ~&  >>  -.evt
-        ~&  >>>  +:evt
         ?+    -.evt  (on-agent:def wir sig)
             %put-entry
           `this(lineup (~(put in lineup) (resig key.evt)))
+          ::
             %del-entry
           `this(lineup (~(del in lineup) (resig key.evt)))
-            %del-bucket  ::TODO doesn't work yet
-          `this(lineup *^lineup)
+          ::
+            %del-bucket  ::TODO doesn't work yet & needs to do more
+          `this(lineup *^lineup, harness *^harness)
         ==  :: settings-event
       ==  :: mark
     ==  :: wire type
       [%mode ~]
   `this
+      [%race *]
+    ?+    -.sig  (on-agent:def wir sig)
+        %fact
+      ?+    p.cage.sig  (on-agent:def wir sig)
+        ::
+        ::  Handle incoming changes from %ahoy
+        ::
+          %ahoy-status
+        =/  sta  !<(status:ahoy q.cage.sig)
+        ?-    -.sta
+            %down
+          ?~  (find ~[`dog`+.sta] harness)
+            `this
+          `this(harness (oust [(need (find ~[`dog`+.sta] harness)) 1] harness))
+          ::
+            %up
+          ?~  (find ~[`dog`+.sta] harness)
+            `this(harness (weld harness ~[`dog`+.sta]))
+          `this
+        ==  :: ahoy-status
+      ==  :: mark
+    ==  :: wire type
   ==  :: wire
   :: subscription to %settings-store for dog lineup etc., auto-retirement
 ::
@@ -200,7 +236,15 @@
   |=  [wir=wire sig=sign-arvo]
   ~>  %bout.[0 '%mush +on-arvo']
   ^-  (quip card _this)
-  `this
+  (on-arvo:def wir sig)
+  ::?+    wir  (on-agent:def wir sig)
+    ::  %race
+    :: /race checks whether a moon is running, so we only care if it is
+    ::?+    sig  (on-agent:def wir sig)
+    ::    [%khan arow *]
+     :: (on-agent:def wir sig) ::`this
+    ::==  :: sign
+  ::==  :: wire
 ::
 ++  on-watch
   |=  =path

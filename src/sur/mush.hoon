@@ -28,11 +28,11 @@
       :: %bankrupt clears all related data from %settings-store
       [%bankrupt ~]
       :: %muster loads a collection of moons, including validation
-      [%muster =lineup]
+      [%muster ~]
       :: %train ensures that a possible $dog is in fact a moon of the team
       [%train =dog]
       :: %muster loads a collection of moons, including validation
-      [%hitch =lineup]
+      [%hitch ~]
       :: %ready adds a $dog to the $lineup
       [%ready =dog]
       :: %retire removes a $dog from the $lineup
