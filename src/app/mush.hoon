@@ -145,13 +145,21 @@
       ++  cards
         ^-  (set card)
         %-  ~(run in lineup)
-        |=  =dog
-        [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train dog])]
+        |=  pup=dog
+        [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train pup])]
       --
       ::
         %ready
       ::  Add a single $dog to the $lineup.
-      `this
+      ::  Since we don't know a priori which dogs are valid, we instead load the
+      ::  dog and then see if it gets kicked, so we use %train cards.
+      =/  pup=dog  +.axn
+      ?.  (~(has in lineup) pup)
+        ~&  >>>  "Moon {pup} not in lineup."
+        `this
+      :_  this(harness (~(put in harness) pup))
+      :~  [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train pup])]
+      ==
       ::
         %retire
       ::  Remove a $dog from the $lineup.
