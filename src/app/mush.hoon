@@ -155,23 +155,45 @@
       ::  dog and then see if it gets kicked, so we use %train cards.
       =/  pup=dog  +.axn
       ?.  (~(has in lineup) pup)
-        ~&  >>>  "Moon {pup} not in lineup."
+        ~&  >>>  "%mush:  dog {pup} not in lineup."
+        ~&  >>   "%mush:  %pedigree the dog first."
         `this
-      :_  this(harness (~(put in harness) pup))
+      :_  this(harness (~(put in lineup) pup))
       :~  [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train pup])]
       ==
       ::
         %retire
-      ::  Remove a $dog from the $lineup.
-      `this
+      ::  Remove a $dog from the $lineup (and implicitly the $harness).
+      =/  pup=dog  +.axn
+      ?~  (find ~[pup] harness)
+      ?.  (~(has in lineup) pup)
+        ~&  >>>  "%mush:  dog {pup} not in lineup."
+        ~&  >    "%mush:  no action taken."
+        `this
+      :_  this(harness (~(del in harness) pup))
+      :~  [%pass / %agent [our.bol %mush] %poke %mush-action !>([%whoa pup])]
+      ==
       ::
         %hike
       ::  Add a $dog to the $harness.
-      `this
+      =/  pup=dog  +.axn
+      ?.  (~(has in lineup) pup)
+        ~&  >>>  "%mush:  dog {pup} not in lineup."
+        ~&  >>   "%mush:  %pedigree the dog first."
+        `this
+      :_  this(harness (snoc harness pup))
+      :~  [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train pup])]
+      ==
       ::
         %whoa
       ::  Remove a $dog from the $harness.
-      `this
+      =/  pup=dog  +.axn
+      =/  idx
+      ?~  idx
+        ~&  >>>  "%mush:  dog {pup} not in harness."
+        ~&  >    "%mush:  no action taken."
+        `this
+      `this(harness ((oust [(need idx) 1] harness) pup))
       ::
         %voyage
       ::  Register a $run.
