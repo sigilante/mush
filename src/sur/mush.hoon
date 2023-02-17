@@ -14,7 +14,7 @@
 ::    a $harness is a list because it has an order for round-robin assignment
 +$  harness   (list dog)
 ::  $sled: tracker for tasks delegated to moons
-+$  sled      (map run dog)
++$  sled      (map run (unit dog))
 ::  $mode: how the task delegation should be handled
 +$  mode      ?(%delegate %redirect)
 ::  $run: an endpoint for the support $dog to handle
@@ -46,8 +46,8 @@
       :: %cancel unregisters a $run, or endpoint.
       [%cancel =run]
       :: %gee delegates a $run to the given $dog
-      [%gee =dog =run]
+      [%gee =dog =run =cage]
       :: %haw redirects a $run to the given $dog
-      [%haw =dog =run =ship]
+      [%haw =dog =run =cage]
   ==
 --

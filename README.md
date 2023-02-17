@@ -100,6 +100,9 @@ The major data structures in the state include:
     calls since that's really what Urbit does for us—the advantage of an event
     log.
 
+- `run` represents the target Gall agent and the intended endpoint, e.g.
+    `/groups/`.  Incoming data is handled as a `cage`.
+
 Ideally, `%mush` compatibility will be able to work like `%dbug` as an agent
 wrapper.  A complying agent will be able to automatically handle `%mush` CDN
 behavior by including a single line such as `%-  agent:mush`.

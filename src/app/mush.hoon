@@ -18,6 +18,7 @@
       =harness
       =sled
       interval=@dr
+      counter=@ud
   ==
 ::
 ::
@@ -181,31 +182,49 @@
         ~&  >>>  "%mush:  dog {pup} not in lineup."
         ~&  >>   "%mush:  %pedigree the dog first."
         `this
+      ~&  >    "%mush:  putting {pup} in harness."
       :_  this(harness (snoc harness pup))
       :~  [%pass / %agent [our.bol %mush] %poke %mush-action !>([%train pup])]
       ==
       ::
         %whoa
-      ::  Remove a $dog from the $harness.
+      ::  Remove a $dog from the $harness.  This does not cancel existing runs.
       =/  pup=dog  +.axn
       =/  idx
       ?~  idx
         ~&  >>>  "%mush:  dog {pup} not in harness."
         ~&  >    "%mush:  no action taken."
         `this
+      ~&  >    "%mush:  removing {pup} in harness."
       `this(harness ((oust [(need idx) 1] harness) pup))
       ::
         %voyage
-      ::  Register a $run.
-      `this
+      ::  Register a $run.  No validation of the path takes place.
+      =/  =run  +.axn
+      `this(sled (~(put by sled) run ~))
       ::
         %cancel
       ::  Unregister a $run.
-      `this
+      =/  =run  +.axn
+      ?.  (~(has by sled) run)
+        ~&  >>>  "%mush:  run {run} not in sled."
+        ~&  >    "%mush:  no action taken."
+        `this
+      ~&  >    "%mush:  putting {run} in sled."
+      `this(sled (~(del by sled) run))
       ::
         %gee
-      ::  Delegate a $run.
-      `this
+      ::  Delegate a $run.  Delegation means that the subsidiary moon runs the
+      ::  process then simply hands the result back through us.
+      =/  =dog  -.axn
+      =/  =run  +<.axn
+      =/  =cage  +>.axn
+      =/  agent=@ta  -.run
+      =/  endpoint  +.run
+      =/  dog  (snag counter harness)
+      :_  this(counter (mod +(counter) (lent harness)))
+      :~  [%pass / %agent [dog agent] %poke cage]
+      ==
       ::
         %haw
       ::  Redirect a $run.
