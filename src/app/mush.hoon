@@ -4,6 +4,14 @@
 ::
 ::    %mush is the dispatcher to the %dogs.
 ::
+::    A %mush-compatible agent has a %mush wrapper which allows %mush to handle
+::    tasks for the agent.  This is dropped in similar to `%dbug`:
+::    `%-  agent:mush`.
+::
+::    The calling agent will either ask %mush to carry out a task directly and
+::    subscribe for the result, or it will ask %mush for a redirection and
+::    subscribe for the target moon.
+::
 /-  *mush, settings, ahoy
 /+  verb, dbug, default-agent
 ::
@@ -17,6 +25,7 @@
       =mode
       =harness
       =sled
+      =runs
       interval=@dr
       counter=@ud
   ==
@@ -78,6 +87,10 @@
   ?+    mar  (on-poke:def mar vaz)
       %noun
     (on-poke:def mar vaz)
+      %mush-card
+    :: unwrap card(s) then reissue to self
+    
+    (on-poke )
       %mush-action
     =+  !<(axn=action vaz)
     ?-    -.axn
@@ -200,8 +213,9 @@
       ::
         %voyage
       ::  Register a $run.  No validation of the path takes place.
-      =/  =run  +.axn
-      `this(sled (~(put by sled) run ~))
+      =/  =run  +<.axn
+      =/  =cage +>.axn
+      `this(sled (~(put by sled) run ~), runs (~(put by run) cage))
       ::
         %cancel
       ::  Unregister a $run.
@@ -227,8 +241,20 @@
       ==
       ::
         %haw
-      ::  Redirect a $run.
-      `this
+      ::  Redirect a $run.  Redirection means that the caller is told to send
+      ::  same task to a given subsidiary moon.  That moon is informed of the
+      ::  caller's identity.  The caller needs to subscribe to /redirect to
+      ::  know about where to call.
+      =/  =dog  -.axn
+      =/  =run  +<.axn
+      =/  =cage  +>.axn
+      =/  agent=@ta  -.run
+      =/  endpoint  +.run
+      =/  dog  (snag counter harness)
+      :_  this(counter (mod +(counter) (lent harness)))
+      :~  [%pass / %agent [dog agent] %poke cage]
+          [%give %fact ~[/redirect] %noun !>(redirect+pup)]
+      ==
     ==
   ==
 ::

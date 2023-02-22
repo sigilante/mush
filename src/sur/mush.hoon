@@ -16,9 +16,11 @@
 ::  $sled: tracker for tasks delegated to moons
 +$  sled      (map run (unit dog))
 ::  $mode: how the task delegation should be handled
-+$  mode      ?(%delegate %redirect)
++$  mode      ?(%redirect %delegate)
 ::  $run: an endpoint for the support $dog to handle
 +$  run       path
+::  $runs: a collection of endpoints and their associated call values
++$  runs      (map run cage)
 ::  $action: the basic events for the %mush app logic
 +$  action
   $%  :: %pedigree adds a candidate $dog to %settings-store
@@ -42,7 +44,7 @@
       :: %whoa retires a $dog from the $harness
       [%whoa =dog]
       :: %voyage registers a $run, or endpoint.
-      [%voyage =run]
+      [%voyage =run =cage]
       :: %cancel unregisters a $run, or endpoint.
       [%cancel =run]
       :: %gee delegates a $run to the given $dog

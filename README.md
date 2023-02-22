@@ -43,6 +43,45 @@ choices:
     This should require the caller to always go back to the main switch for each
     call in order to preserve load balancing.
 
+`%mush` is built to delegate, meaning that the original callee ship will serve
+the result to the caller.  Redirection is left as an exercise to the reader.
+
+
+##  User Story
+
+Let's suppose that we have a `%mush`-compatible agent `%mirage` which simply
+provides image data from an endpoint.  That's all it is, an image host.  By
+itself, `%mirage` can simply serve images through peeks until the end of its
+days.  However, suppose that `%mirage` does something more interesting and
+computationally intensive:  it resizes images, which means a dynamic operation
+has to take place.  This creates more load on the instance, and in the limit
+could mean system delays.
+
+One solution is to use a CDN like `%mush`.  What `%mush` will do for `%mirage`
+is maintain a stable of moons running `%mirage` or clients which can themselves
+do the calculations.  Any call to `%mirage` will be routed to an appropriate
+moon, and then either returned directly as if from `%mirage` (delegation) or
+returned from the instance of `%mirage` on that moon (redirection).
+
+From the caller side, a call to `%mirage` should look like a regular call to any
+endpoint:
+
+1. Poke for data to `%mirage` on ~sampel-palnet.
+2. Subscribe for result to `%mirage` at ~sampel-palnet.
+
+That is, `%mush` should be invisible to the caller.  The question is what this
+additional infrastructure looks like for `%mirage`'s developers.
+
+Ideally, using `%mush` should only require including the `%mush` agent and a
+single drop-in line, much as `%dbug`.  The complexity here is that a library
+cannot know about agent state, but it can punt calls via the `%mush` agent.
+
+The `%mush` agent will need to be provisioned explicitly, with moons running the
+delegating agent (e.g. `%mirage`).  This needs to be done manually at the
+current time since moons cannot be launched autonomously.
+
+
+##  Code
 
 `%mush` will employ a [sled dog
 metaphor](https://www.neewadogs.com/blogs/blog/sled-dog-commands).  The entry
@@ -75,7 +114,9 @@ The pokes include:
 - `%whoa` retires a `$dog` from the `$harness`.
 - `%gee` delegates a `$run`, or endpoint task, to the given `$dog`.  The mode
     is set from `%settings-store`, key `%mush %mode`.
-- `%haw` redirects a `$run`, or endpoint task, to the given `$dog`.
+- `%haw` redirects a `$run`, or endpoint task, to the given `$dog`.  This mode
+    is not active in the current version of `%mush`, as it needs the caller to
+    track the result from the new subsidiary source.
 
 The major data structures in the state include:
 
@@ -114,6 +155,14 @@ software, for instance, or supporting gameplay).
 TODO:
 - [ ] deduplicate subscriptions to `%ahoy` per moon
 - [ ] try with `|install` triggers or `%docket` discovery stuff
+
+
+##  Challenges
+
+- How can `%mush` be modified to handle redirects as well (`%gee`)?
+- Should moons be partitioned by resource served, rather than simply
+    round-robin?
+
 
 ##  Further Reading
 
