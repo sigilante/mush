@@ -87,10 +87,18 @@
   ?+    mar  (on-poke:def mar vaz)
       %noun
     (on-poke:def mar vaz)
-      %mush-card
-    :: unwrap card(s) then reissue to self
-    
-    (on-poke )
+      %mush-poke
+    :: unwrap card then reissue to self
+    =/  mark=term  -.vaz
+    =/  =path      +.vaz
+    %voyage %gee
+    (on-poke %mush-action vaz)
+      %mush-watch
+    :: unwrap card then reissue to self
+    =/  agent=term  -.vaz
+    =/  =path  +.vaz
+    :: TODO
+    (on-watch )
       %mush-action
     =+  !<(axn=action vaz)
     ?-    -.axn

@@ -34,14 +34,11 @@
     |=  [=mark =vase]
     ^-  (quip card:agent:gall agent:gall)
     ?.  ?=(%mush-effect mark)
-      :: this is muddled because it shouldn't pass first, it should pass instead
-      =^  cards  agent  (on-poke:ag mark vase)
-      =/  idx  0
-      =/  carts=_cards  ~
-      |-  ^-  (quip card:agent:gall agent:gall)
-      ?:  =(idx (lent cards))  [cards this]
-      =/  cart  [%pass / %agent [our.bol %mush] %poke %mush-card !>((snag idx cards))]
-      $(idx +(idx), carts (weld cart carts))
+      ::  If this is not a special command to this wrapper agent, then drop it
+      ::  through to the %mush agent.
+      :_  this
+      :~  [%pass / %agent [our.bol %mush] %mush-poke !>(mark vase)]
+      ==
     =/  dbug
       !<(poke vase)
     =;  =tang
@@ -116,7 +113,7 @@
     ?+  path  [~ ~]
       [%u %mush ~]                 ``noun+!>(&)
       [%x %mush %state ~]          ``noun+!>(on-save:ag)
-      [%x %mush %subscriptions ~]  ``noun+!>([wex sup]:bowl)
+      ::[%x %mush %endpoints ~]  ``noun+!>([wex sup]:bowl)
     ==
   ::
   ++  on-init
@@ -137,14 +134,9 @@
   ++  on-watch
     |=  =path
     ^-  (quip card:agent:gall agent:gall)
-    =^  cards  agent  (on-watch:ag path)
-    ~&  >  cards
-    =/  idx  0
-    =/  carts=_cards  ~
-    |-  ^-  (quip card:agent:gall agent:gall)
-    ?:  =(idx (lent cards))  [cards this]
-    =/  cart  (snag idx cards)
-    $(idx +(idx), carts (weld cart carts))
+    :_  this
+    :~  [%pass / %agent [our.bol %mush] %mush-watch !>([dap.bowl path])]
+    ==
   ::
   ++  on-leave
     |=  =path

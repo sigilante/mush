@@ -1,6 +1,8 @@
 #   `%mush`
 ##  A Ship-Based Reverse Proxy for Urbit
 
+**WORK IN PROGRESS**
+
 A reverse proxy dispatches incoming service commands to a single endpoint
 across multiple backend resources to help scalability, resilience, and
 performance.
@@ -25,6 +27,10 @@ intermittently available, or is so burdened by requests that a new marginal
 request degrades performance.  It would be preferable for the endpoint to be
 able to serve the resource efficiently by cycling or load-balancing a set of
 support ships.
+
+Altho not currently an acute problem, load balancing for ships will eventually
+need to take place for very active ships on the network (distributing popular
+software, for instance, or supporting gameplay).
 
 In the current scenario, we would like a request made for a resource to an Urbit
 ship to be handled by one of a collection of moons.  Since Urbit validates ships
@@ -72,13 +78,52 @@ endpoint:
 That is, `%mush` should be invisible to the caller.  The question is what this
 additional infrastructure looks like for `%mirage`'s developers.
 
-Ideally, using `%mush` should only require including the `%mush` agent and a
+Using `%mush` should only require including the `%mush` agent and a
 single drop-in line, much as `%dbug`.  The complexity here is that a library
-cannot know about agent state, but it can punt calls via the `%mush` agent.
+cannot know about agent state, but it can punt calls via the `%mush` agent.  So
+each card is caught by the `%mush` wrapper and wrapped as a poke to the `%mush`
+agent, which unpacks them and dispatches them to an appropriate subsidiary moon.
+
+Thus to use `%mush`, the agent need merely add two lines:
+
+```hoon
+/+  mush
+
+%-  agent:mush  :: adjacent to agent:dbug inclusion
+```
 
 The `%mush` agent will need to be provisioned explicitly, with moons running the
-delegating agent (e.g. `%mirage`).  This needs to be done manually at the
+delegate agent (e.g. `%mirage`).  This needs to be done manually at the
 current time since moons cannot be launched autonomously.
+
+```hoon
+::  Register support moons. These must have the delegate agent installed.
+:mush &mush-action [%pedigree ~dister-dozzod-doznec]
+:mush &mush-action [%pedigree ~mister-dozzod-doznec]
+:mush &mush-action [%pedigree ~mistyr-dozzod-doznec]
+
+::  Mark support moons as available. %ahoy will verify that they are accessible.
+:mush &mush-action [%train ~dister-dozzod-doznec]
+:mush &mush-action [%train ~mister-dozzod-doznec]
+:mush &mush-action [%train ~mistyr-dozzod-doznec]
+```
+
+(Later we'll have a generator to do this from a list on disk, say `mush.bill`.)
+
+**`mush.bill`**
+
+```hoon
+:~  ~dister-dozzod-doznec
+    ~mister-dozzod-doznec
+    ~mistyr-dozzod-doznec
+==
+```
+
+Other actions, like registering endpoints and load balancing, will take place
+automatically within `%mush`.  `%mush` does not need to know the agent's
+identity ahead of time, as that information will be included in the wrapped
+cards.  `%mush` has no particular error handling:  if you're passing bad cards,
+go directly to `%jael`.
 
 
 ##  Code
@@ -144,13 +189,7 @@ The major data structures in the state include:
 - `run` represents the target Gall agent and the intended endpoint, e.g.
     `/groups/`.  Incoming data is handled as a `cage`.
 
-Ideally, `%mush` compatibility will be able to work like `%dbug` as an agent
-wrapper.  A complying agent will be able to automatically handle `%mush` CDN
-behavior by including a single line such as `%-  agent:mush`.
-
-Altho not currently an acute problem, load balancing for ships will eventually
-need to take place for very active ships on the network (distributing popular
-software, for instance, or supporting gameplay).
+`%mush` marks are a rather complicated lot because of the agent-wrapper library.
 
 TODO:
 - [ ] deduplicate subscriptions to `%ahoy` per moon
@@ -159,7 +198,7 @@ TODO:
 
 ##  Challenges
 
-- How can `%mush` be modified to handle redirects as well (`%gee`)?
+- How can `%mush` be modified to handle redirects as well (`%haw`)?
 - Should moons be partitioned by resource served, rather than simply
     round-robin?
 
@@ -168,7 +207,6 @@ TODO:
 
 - [`%dbug` Debugging Wrapper](https://developers.urbit.org/guides/additional/app-workbook/dbug), Urbit App Workbook
 
----
 
 ##  Some Useful Commands
 
